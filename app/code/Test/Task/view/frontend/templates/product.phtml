@@ -1,12 +1,18 @@
+<link href="<?= $block->getAssetUrl('Test_Task::css/style.css') ?>" rel="stylesheet" type="text/css" media="all"/>
 <div class="product-block">
     <div class="product-block-title"><?= $block->escapeHtml($block->helper->getBlockTitle()) ?></div>
-    <?php $product = $block->getProduct(); ?>
+    <?php
+    $product = $block->getProduct(); ?>
     <div class="product-block-image">
-        <a href="<?= $product->getProductUrl() ?>"><img src="<?= $block->getImageUrl($product,'product_page_image_small') ?>" alt="<?= $block->escapeHtml($product->getName()) ?>"></a>
+        <a href="<?= $product->getProductUrl() ?>"><img
+                    src="<?= $block->getImageUrl($product, 'product_page_image_large') ?>"
+                    alt="<?= $block->escapeHtml($product->getName()) ?>"></a>
     </div>
     <div class="product-block-info">
-        <div class="product-block-name"><a href="<?= $product->getProductUrl() ?>"><?= $block->escapeHtml($product->getName()) ?></a></div>
+        <div class="product-block-name"><a href="<?= $product->getProductUrl() ?>"><?= $block->escapeHtml(
+                    $product->getName()
+                ) ?></a></div>
         <div class="product-block-price"><?= $block->escapeHtml($product->getPrice()) ?></div>
-        <div class="product-block-buy"><a href="<?= $block->escapeUrl($block->getBuyUrl()) ?>">Buy</a></div>
+        <a href="<?= $block->escapeUrl($block->getBuyUrl()) ?>"><div class="product-block-buy">Buy</div></a>
     </div>
 </div>

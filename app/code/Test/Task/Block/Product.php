@@ -114,4 +114,17 @@ class Product extends Template
     {
         return 'Test_Task::product.phtml';
     }
+
+    /**
+     * This function will be used to get the css/js file.
+     *
+     * @param string $asset
+     * @return string
+     */
+    public function getAssetUrl($asset)
+    {
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $assetRepository = $objectManager->get('Magento\Framework\View\Asset\Repository');
+        return $assetRepository->createAsset($asset)->getUrl();
+    }
 }

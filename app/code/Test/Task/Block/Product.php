@@ -1,4 +1,5 @@
 <?php
+
 namespace Test\Task\Block;
 
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
@@ -12,28 +13,49 @@ class Product extends Template
      * @var Data
      */
     public $helper;
+    /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
+    public $storeManager;
+    /**
+     * @var \Magento\Framework\View\Element\BlockFactory
+     */
+    public $blockFactory;
+    /**
+     * @var \Magento\Store\Model\App\Emulation
+     */
+    public $appEmulation;
 
     /**
      * @var CollectionFactory
      */
     private $productCollectionFactory;
 
+
     /**
      * Product constructor.
-     * @param Context $context
-     * @param Data $helper
-     * @param CollectionFactory $productCollectionFactory
-     * @param array $data
+     *
+     * @param  Context  $context
+     * @param  Data  $helper
+     * @param  CollectionFactory  $productCollectionFactory
+     * @param  array  $data
      */
     public function __construct(
+
         Context $context,
         Data $helper,
         CollectionFactory $productCollectionFactory,
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Magento\Framework\View\Element\BlockFactory $blockFactory,
+        \Magento\Store\Model\App\Emulation $appEmulation,
         array $data = []
     ) {
-        $this->helper = $helper;
+        $this->helper                   = $helper;
         $this->productCollectionFactory = $productCollectionFactory;
         parent::__construct($context, $data);
+        $this->storeManager = $storeManager;
+        $this->blockFactory = $blockFactory;
+        $this->appEmulation = $appEmulation;
     }
 
     /**
@@ -47,7 +69,26 @@ class Product extends Template
         $productCollection->addAttributeToSelect('*');
         $productCollection->getSelect()->orderRand();
         $productCollection->setPageSize(1);
+
         return $productCollection->getFirstItem();
+    }
+
+    /**
+     * @param $product
+     * @param  string  $imageType
+     *
+     * @return mixed
+     */
+    public function getImageUrl($product, string $imageType)
+    {
+        $storeId = $this->storeManager->getStore()->getId();
+        $this->appEmulation->startEnvironmentEmulation($storeId, \Magento\Framework\App\Area::AREA_FRONTEND, true);
+        $imageBlock   = $this->blockFactory->createBlock('Magento\Catalog\Block\Product\ListProduct');
+        $productImage = $imageBlock->getImage($product, $imageType);
+        $imageUrl     = $productImage->getImageUrl();
+        $this->appEmulation->stopEnvironmentEmulation();
+
+        return $imageUrl;
     }
 
     /**
@@ -60,6 +101,7 @@ class Product extends Template
         if ($this->helper->isRedirectToCheckout()) {
             return $this->_urlBuilder->getUrl('checkout/index/index');
         }
+
         return $this->getProduct()->getProductUrl();
     }
 
